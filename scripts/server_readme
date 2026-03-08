@@ -1,0 +1,16 @@
+Futó szerver azonosítása
+pgrep -f server.py
+Részletesebb:
+ps aux | grep server.py
+
+Szerver leállítása:
+kill [process_id]
+Név alapján:
+pkill -f server.py
+Ellenörzés:
+pgrep -f server.py
+
+
+Szerver indítás:
+nohup python3 server.py &
+
