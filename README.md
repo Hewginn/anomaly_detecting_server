@@ -29,13 +29,16 @@ Anomalies:
 
 ## Run steps
 
-- Test server
-    1. **source venv/bin/activate** at venv location
-    2. **python flask_server.py** at *flask_server.py* location
-- Request sender
-    1. **source venv/bin/activate** at venv location
-    2. **locust -f locustfile.py --host=http://localhost:5000 --headless -u 50 -r 10 -t 5m** at *locustfile.py* location
-        - *-u* number of user objects
-        - *-r* rate of user spawn (users per second)
-        - *-t* test duration (10s -> 10 seconds, 10m -> 10 minutes, 10h -> 10 hours)
+### Test server
+
+1. **source venv/bin/activate** at venv location
+2. **python flask_server.py** at *flask_server.py* location
+
+### Request sender
+
+1. **source venv/bin/activate** at venv location
+2. **locust -f locustfile.py --host=http://localhost:5000 --headless -u 50 -r 10 -t 5m** at *locustfile.py* location
+    - *-u* number of user objects
+    - *-r* rate of user spawn (users per second)
+    - *-t* test duration (10s -> 10 seconds, 10m -> 10 minutes, 10h -> 10 hours)
 

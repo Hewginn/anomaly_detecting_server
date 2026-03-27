@@ -68,7 +68,7 @@ class NormalUser(HttpUser):
 class DoSUser(HttpUser):
     wait_time = between(0.01, 0.1)  # very aggressive
 
-    headers = common_headers("anomaly dos")
+    headers = common_headers("anomaly")
 
     @task
     def flood_home(self):
@@ -89,7 +89,7 @@ class BruteForceUser(HttpUser):
     usernames = ["admin", "root", "user"]
     passwords = ["1234", "password", "admin", "123456", "letmein"]
 
-    headers = common_headers("anomaly brute")
+    headers = common_headers("anomaly")
 
     @task
     def brute_login(self):
@@ -119,7 +119,7 @@ class FuzzingUser(HttpUser):
         "/random" + ''.join(random.choices(string.ascii_letters, k=5))
     ]
 
-    headers = common_headers("anomaly fizz")
+    headers = common_headers("anomaly")
 
     @task
     def fuzz_endpoints(self):
@@ -134,7 +134,7 @@ class FuzzingUser(HttpUser):
 class MethodAbuseUser(HttpUser):
     wait_time = between(0.2, 1)
 
-    headers = common_headers("anomaly:method")
+    headers = common_headers("anomaly")
 
     @task
     def abuse_methods(self):
@@ -152,7 +152,7 @@ class MethodAbuseUser(HttpUser):
 class MixedAttackUser(HttpUser):
     wait_time = between(0.05, 0.5)
 
-    headers = common_headers("anomaly:mixed")
+    headers = common_headers("anomaly")
 
     @task(3)
     def dos(self):
@@ -208,7 +208,7 @@ class LogInjectionUser(HttpUser):
 
         return {
             "X-Forwarded-For": self.ip,
-            "X-User-Type": "anomaly log injection",
+            "X-User-Type": "anomaly",
             "User-Agent": payload
         }
 
