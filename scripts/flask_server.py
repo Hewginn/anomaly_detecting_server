@@ -1,6 +1,6 @@
 import threading
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 import logging
 import os
 from datetime import datetime
@@ -27,10 +27,16 @@ logging.basicConfig(
     format="%(message)s"
 )
 
+# init logai
+
 #log analizer
 def analyze_access_logs():
     while True:
         try:
+            # implement log parser
+
+            # implement log logai
+
             ip_counter = Counter()
             total_requests = 0
             error_requests = 0
@@ -67,25 +73,23 @@ def analyze_access_logs():
 #logging after every http request
 @app.after_request
 def log_request(response):
-    ip = request.remote_addr
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    user_type = request.headers.get("X-User-Type", "unknown")
     method = request.method
     path = request.path
     status = response.status_code
     user_agent = request.headers.get("User-Agent")
 
     logging.info(
-        f'{ip} - - [{datetime.now()}] "{method} {path} HTTP/1.1" {status} "{user_agent}"'
+        f'{ip} - - [{datetime.now()}] "{method} {path} HTTP/1.1" {status} "{user_agent}" "{user_type}"'
     )
-
     return response
 
 #checking username and password
 def check_auth(username, password, ip):
     if username == USERNAME and password == PASSWORD:
-        logging.info(f"SUCCESS login from {ip} with username '{username}'")
         return True
     else:
-        logging.warning(f"FAILED login from {ip} with username '{username}'")
         return False
 
 
@@ -108,8 +112,35 @@ def home():
 
     return "Welcome, authenticated user!"
 
+@app.route("/api/data", methods=["GET"])
+def get_data():
+
+    auth = request.authorization
+    ip = request.remote_addr
+
+    if not auth or not check_auth(auth.username, auth.password, ip):
+        return authenticate()
+
+    return jsonify({"data": "example"})
+
+@app.route("/api/post", methods=["POST"])
+def post_data():
+
+    auth = request.authorization
+    ip = request.remote_addr
+
+    if not auth or not check_auth(auth.username, auth.password, ip):
+        return authenticate()
+
+    data = request.json
+    return jsonify({"received": data})
+
 #running server
 if __name__ == "__main__":
+
+    # suppress default werkzeug logs
+    werkzeug_log = logging.getLogger('werkzeug')
+    werkzeug_log.setLevel(logging.ERROR)
 
     #setting analyzer thread
     thread = threading.Thread(target=analyze_access_logs, daemon=True)
