@@ -41,4 +41,5 @@ Anomalies:
     - *-u* number of user objects
     - *-r* rate of user spawn (users per second)
     - *-t* test duration (10s -> 10 seconds, 10m -> 10 minutes, 10h -> 10 hours)
+    - add *NormalUser* if only normal users needed
 
