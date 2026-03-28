@@ -9,8 +9,14 @@ import time
 
 app = Flask(__name__)
 
-USERNAME = "admin"
-PASSWORD = "1234"
+AUTH = {
+    "admin": "1234",
+    "tommy": "password",
+    "roland": "bestpassword01",
+    "meandmyself": "badassPassword!",
+    "admin2": "4321",
+    "user": "key123",
+}
 
 # create log folder
 ACCESS_LOGS_DIR = "logs"
@@ -27,49 +33,6 @@ logging.basicConfig(
     format="%(message)s"
 )
 
-# init logai
-
-#log analizer
-def analyze_access_logs():
-    while True:
-        try:
-            # implement log parser
-
-            # implement log logai
-
-            ip_counter = Counter()
-            total_requests = 0
-            error_requests = 0
-
-            with open(ACCESS_LOG, "r") as f:
-                for line in f:
-                    parts = line.split()
-
-                    if len(parts) < 4:
-                        continue
-
-                    ip = parts[0]
-                    status = int(parts[-2])
-
-                    ip_counter[ip] += 1
-                    total_requests += 1
-
-                    if status >= 400:
-                        error_requests += 1
-
-            print("----- Access Log Analysis -----")
-            print("Total requests:", total_requests)
-            print("Error requests:", error_requests)
-
-            print("Top IPs:")
-            for ip, count in ip_counter.most_common(5):
-                print(ip, count)
-
-        except Exception as e:
-            print("Log analysis error:", e)
-
-        time.sleep(60)  # run every 60 seconds
-
 #logging after every http request
 @app.after_request
 def log_request(response):
@@ -79,15 +42,16 @@ def log_request(response):
     path = request.path
     status = response.status_code
     user_agent = request.headers.get("User-Agent")
+    user_name = request.authorization.username if request.authorization is not None else 'unknown'
 
     logging.info(
-        f'{ip} - - [{datetime.now()}] "{method} {path} HTTP/1.1" {status} "{user_agent}" "{user_type}"'
+        f'{ip} - - {user_name} [{datetime.now()}] "{method} {path} HTTP/1.1" {status} "{user_agent}" "{user_type}"'
     )
     return response
 
 #checking username and password
 def check_auth(username, password, ip):
-    if username == USERNAME and password == PASSWORD:
+    if username in AUTH.keys() and AUTH[username] == password:
         return True
     else:
         return False
@@ -141,10 +105,6 @@ if __name__ == "__main__":
     # suppress default werkzeug logs
     werkzeug_log = logging.getLogger('werkzeug')
     werkzeug_log.setLevel(logging.ERROR)
-
-    #setting analyzer thread
-    thread = threading.Thread(target=analyze_access_logs, daemon=True)
-    thread.start()
 
     #running server
     app.run(host="0.0.0.0", port=5000)
